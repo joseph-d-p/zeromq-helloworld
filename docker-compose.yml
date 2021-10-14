@@ -1,0 +1,34 @@
+version: '3.9'
+networks:
+  zmq-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet:  "192.168.1.0/24"
+          gateway: "192.168.1.1"
+
+services:
+  server:
+    build: ./server
+    image: "zeromq/server:1.0.0"
+    env_file:
+      - ./server/.env
+    container_name: zeromq-server
+    hostname: zeromq-server
+    networks:
+      zmq-network:
+        ipv4_address: 192.168.1.120
+
+  client:
+    build: ./client
+    image: "zeromq/client:1.0.0"
+    env_file:
+      - ./client/.env
+    container_name: zeromq-client
+    hostname: zeromq-client
+    depends_on:
+      - server
+    networks:
+      zmq-network:
+        ipv4_address: 192.168.1.130
